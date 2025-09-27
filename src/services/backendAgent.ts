@@ -456,21 +456,31 @@ export class BackendAgent {
       return `[${index + 1}] ${sourceType}: ${source.title}`;
     });
     
-    // Add online data sources
+    // Add online data sources with proper names and URLs
     const onlineSources = onlineData.map((data, index) => {
-      return `[${sources.length + index + 1}] Online: ${data.split(':')[0] || 'Web Search'}`;
+      // Extract source name from the data string (format: "Source Name - Title (URL)")
+      const sourceName = data.split(' - ')[0] || `Online Source ${index + 1}`;
+      return `[${sources.length + index + 1}] ${sourceName}`;
     });
     
-    // Generate detailed citations
+    // Generate detailed citations with actual source information
     const enhancedCitations = [
       ...sources.map(source => {
         const timestamp = source.lastUpdated.toLocaleDateString();
         return `${source.title} (${source.type.toUpperCase()}, last updated: ${timestamp})`;
       }),
       ...onlineData.map((data, index) => {
-        return `Online source ${index + 1} (retrieved: ${new Date().toLocaleDateString()})`;
+        // Extract full citation information from the data string
+        if (data.includes('(http')) {
+          // Format: "Source Name - Title (URL)"
+          const parts = data.match(/(.*?) - "(.*?)" \((.*?)\)/);
+          if (parts) {
+            return `${parts[1]}: "${parts[2]}" - ${parts[3]} (retrieved: ${new Date().toLocaleDateString()})`;
+          }
+        }
+        return `${data} (retrieved: ${new Date().toLocaleDateString()})`;
       }),
-      `Processed by Gemini 1.5 Flash on ${new Date().toLocaleDateString()}`
+      `Analysis processed by Gemini 2.0 Flash Experimental on ${new Date().toLocaleDateString()}`
     ];
     
     return {

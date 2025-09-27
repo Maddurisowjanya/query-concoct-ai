@@ -54,6 +54,11 @@ export const QueryInterface: React.FC = () => {
   useEffect(() => {
     const existingReports = backendAgent.getAllReports();
     setReports(existingReports);
+    
+    // Load existing files from the service
+    const existingFiles = simpleFileService.getFiles();
+    setUploadedFiles(existingFiles);
+    console.log('📁 Loaded existing files:', existingFiles.length);
 
     const unsubscribe = backendAgent.onReportRefresh((reportId, updatedReport) => {
       setReports(prev => prev.map(report => 
@@ -139,13 +144,24 @@ export const QueryInterface: React.FC = () => {
     const queryText = customQuery || query;
     if (!queryText.trim() || uploadedFiles.length === 0) return;
     
+    console.log('📝 Starting file-based query...');
+    console.log('Query:', queryText);
+    console.log('Uploaded files:', uploadedFiles.length);
+    
     // Get file contents directly for processing
     const fileContents: string[] = [];
     uploadedFiles.forEach(file => {
       if (file.content && file.status === 'completed') {
-        fileContents.push(`File: ${file.name}\n${file.content}`);
+        const formattedContent = `File: ${file.name}\nType: ${file.type}\nSize: ${(file.size / 1024).toFixed(1)} KB\nContent:\n${file.content}`;
+        fileContents.push(formattedContent);
+        console.log(`  📄 Including file: ${file.name} (${file.content.length} chars)`);
+      } else {
+        console.warn(`  ⚠️ Skipping file: ${file.name} (Status: ${file.status})`);
       }
     });
+    
+    console.log(`Total file contents to send: ${fileContents.length}`);
+    console.log('File contents preview:', fileContents.map(c => c.substring(0, 100) + '...'));
     
     await handleQuery(queryText, [], fileContents);
   };
