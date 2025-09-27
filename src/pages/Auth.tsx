@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Github } from 'lucide-react';
+import { FaGoogle, FaTwitter } from 'react-icons/fa';
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -81,12 +82,31 @@ const Auth = () => {
     }
   };
 
+  const handleSocialLogin = async (provider: 'google' | 'github' | 'twitter') => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Research Assistant</CardTitle>
-          <CardDescription>Sign in to access your AI research dashboard</CardDescription>
+          <CardTitle className="text-2xl font-bold">Query Concoct AI</CardTitle>
+          <CardDescription>Sign in to access your AI-powered analytics platform</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
@@ -129,6 +149,45 @@ const Auth = () => {
                   Sign In
                 </Button>
               </form>
+              
+              <div className="mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3 mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleSocialLogin('google')}
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    <FaGoogle className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleSocialLogin('github')}
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    <Github className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleSocialLogin('twitter')}
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    <FaTwitter className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </TabsContent>
             
             <TabsContent value="signup">
