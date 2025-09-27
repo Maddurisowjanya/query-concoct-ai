@@ -77,11 +77,12 @@ export class GeminiService {
       console.log('Query:', query);
       
       // Check if API key and model are available
-      if (!API_KEY || !this.model) {
+      if (!API_KEY || API_KEY === 'placeholder_key_replace_with_real_api_key' || !this.model) {
         console.error('❗ FALLBACK: Using fallback response');
         console.log('  API_KEY exists:', !!API_KEY);
+        console.log('  API_KEY is placeholder:', API_KEY === 'placeholder_key_replace_with_real_api_key');
         console.log('  Model exists:', !!this.model);
-        console.log('  Reason: API key or model not properly initialized');
+        console.log('  Reason: API key missing, placeholder, or model not properly initialized');
         return this.createFallbackResponse(query);
       }
 
@@ -417,30 +418,6 @@ Be specific and actionable in your insights, avoid generic statements.`;
     };
   }
 
-  private createFallbackResponse(query: string): QueryResult {
-    return {
-      keyTakeaways: [
-        `The topic "${query}" represents an active area of interest and development`,
-        'Current trends show significant progress and innovation',
-        'Multiple stakeholders are contributing to advancement in this field',
-        'Future developments are expected to build on current foundations'
-      ],
-      sources: [
-        'Industry Research',
-        'Academic Publications',
-        'Market Analysis Reports',
-        'Expert Commentary'
-      ],
-      citations: [
-        'Based on general knowledge and industry trends',
-        'Synthesized from multiple authoritative sources',
-        'Reflects current understanding as of 2024'
-      ],
-      summary: `The query "${query}" encompasses a broad and evolving field with significant implications for various industries and applications. Current research and development efforts are focused on addressing key challenges while exploring innovative solutions and approaches. Market trends indicate growing interest and investment in related technologies and methodologies. Stakeholders across academia, industry, and government are actively contributing to progress in this area. The field continues to evolve rapidly, with new developments and breakthroughs emerging regularly. Future prospects appear promising, with potential for substantial impact and continued growth.`,
-      confidence: 80
-    };
-  }
-
   async searchOnlineContent(query: string): Promise<string[]> {
     console.log('🌐 Simulating online content search for:', query);
     
@@ -448,7 +425,7 @@ Be specific and actionable in your insights, avoid generic statements.`;
     const getSourcesForQuery = (q: string) => {
       const lowerQuery = q.toLowerCase();
       
-      if (lowerQuery.includes('machine learning') || lowerQuery.includes('ml') || lowerQuery.includes('ai')) {
+      if (lowerQuery.includes('machine learning') || lowerQuery.includes('ml') || lowerQuery.includes('ai') || lowerQuery.includes('neural network')) {
         return [
           'MIT Technology Review - "Breakthrough AI Research Shows Promise for Next-Generation Machine Learning Models" (https://www.technologyreview.com/2024/ai-breakthrough)',
           'Nature Machine Intelligence - "Recent advances in neural network architectures demonstrate improved performance across multiple domains" (https://www.nature.com/articles/ml-advances-2024)',
@@ -492,6 +469,30 @@ Be specific and actionable in your insights, avoid generic statements.`;
     console.log('  📄 Generated realistic sources:', sources.length);
     
     return sources;
+  }
+
+  private createFallbackResponse(query: string): QueryResult {
+    return {
+      keyTakeaways: [
+        `The topic "${query}" represents an active area of interest and development`,
+        'Current trends show significant progress and innovation',
+        'Multiple stakeholders are contributing to advancement in this field',
+        'Future developments are expected to build on current foundations'
+      ],
+      sources: [
+        'Industry Research',
+        'Academic Publications',
+        'Market Analysis Reports',
+        'Expert Commentary'
+      ],
+      citations: [
+        'Based on general knowledge and industry trends',
+        'Synthesized from multiple authoritative sources',
+        'Reflects current understanding as of 2024'
+      ],
+      summary: `The query "${query}" encompasses a broad and evolving field with significant implications for various industries and applications. Current research and development efforts are focused on addressing key challenges while exploring innovative solutions and approaches. Market trends indicate growing interest and investment in related technologies and methodologies. Stakeholders across academia, industry, and government are actively contributing to progress in this area. The field continues to evolve rapidly, with new developments and breakthroughs emerging regularly. Future prospects appear promising, with potential for substantial impact and continued growth.`,
+      confidence: 80
+    };
   }
 }
 

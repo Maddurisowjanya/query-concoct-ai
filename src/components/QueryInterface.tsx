@@ -202,6 +202,7 @@ export const QueryInterface: React.FC = () => {
         }
       }, 800);
 
+      console.log('🔍 QueryInterface: About to call backendAgent.processQuery');
       const report = await backendAgent.processQuery(queryText, {
         includeOnlineData: true,
         maxSources: 8,
@@ -209,6 +210,7 @@ export const QueryInterface: React.FC = () => {
         selectedFileIds: fileIds,
         fileContents: fileContents
       });
+      console.log('✅ QueryInterface: Received report from backendAgent:', report.id);
 
       clearInterval(stepInterval);
 

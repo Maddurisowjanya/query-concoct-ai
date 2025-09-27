@@ -50,14 +50,25 @@ export class BackendAgent {
     console.log(`🔍 Starting query processing for: "${query}"`);
     console.log(`📋 Report ID: ${reportId}`);
 
+    // Step 1: Bill for the query FIRST - this should always happen
+    console.log('💰 Step 1: Billing for query...');
+    let queryBilling;
     try {
-      // Step 1: Bill for the query
-      console.log('💰 Step 1: Billing for query...');
-      const queryBilling = await flexpriceService.billQuery(query, { reportId });
+      queryBilling = await flexpriceService.billQuery(query, { reportId });
+      console.log('✅ Query billing successful:', queryBilling.id);
+    } catch (billingError) {
+      console.error('⚠️ Query billing failed:', billingError);
+      throw new Error(`Billing system unavailable: ${billingError}`);
+    }
 
+    let reportBilling: any = null;
+    let result: QueryResult;
+    let searchResults: any;
+    
+    try {
       // Step 2: Search PDFs and data sources
       console.log('📚 Step 2: Searching PDFs and data sources...');
-      const searchResults = await this.comprehensiveDataSearch(query, options);
+      searchResults = await this.comprehensiveDataSearch(query, options);
       
       // Step 3: Extract and process content
       console.log('📄 Step 3: Extracting content from sources...');
@@ -76,7 +87,7 @@ export class BackendAgent {
       console.log(`   🌐 Online Data: ${onlineData.length} items`);
       console.log(`   📋 Total Sources: ${searchResults.sources.length}`);
       
-      const result = await this.generateStructuredReport(query, extractedContent, onlineData, searchResults.sources);
+      result = await this.generateStructuredReport(query, extractedContent, onlineData, searchResults.sources);
       console.log('✅ AI processing complete');
       console.log(`   📝 Summary: ${result.summary.length} chars`);
       console.log(`   🔑 Key takeaways: ${result.keyTakeaways.length}`);
@@ -85,7 +96,8 @@ export class BackendAgent {
 
       // Step 6: Calculate complexity and bill for report
       const complexity = this.calculateComplexity(result, searchResults.sources.length);
-      const reportBilling = await flexpriceService.billReport(reportId, complexity);
+      reportBilling = await flexpriceService.billReport(reportId, complexity);
+      console.log('✅ Report billing successful:', reportBilling.id);
 
       // Step 7: Create processed report
       const processingTime = Date.now() - startTime;
@@ -96,7 +108,7 @@ export class BackendAgent {
         sourcesUsed: searchResults.sources,
         processingTime,
         timestamp: new Date(),
-        billingEvents: [queryBilling.id, reportBilling.id],
+        billingEvents: reportBilling ? [queryBilling.id, reportBilling.id] : [queryBilling.id],
         refreshCount: 0
       };
 
@@ -108,7 +120,9 @@ export class BackendAgent {
         try {
           await databaseService.saveReport(processedReport);
           await databaseService.trackUsage(queryBilling);
-          await databaseService.trackUsage(reportBilling);
+          if (reportBilling) {
+            await databaseService.trackUsage(reportBilling);
+          }
           await databaseService.updateAnalyticsSummary();
         } catch (error) {
           console.error('Error saving to database:', error);
@@ -119,8 +133,42 @@ export class BackendAgent {
       return processedReport;
 
     } catch (error) {
-      console.error('❌ Error processing query:', error);
-      throw new Error(`Failed to process query: ${error}`);
+      console.error('❌ Error processing query (but query was billed):', error);
+      
+      // Even if processing failed, we still generate a fallback report since the query was billed
+      const processingTime = Date.now() - startTime;
+      const fallbackResult: QueryResult = {
+        keyTakeaways: [
+          `Query "${query}" was processed but encountered technical difficulties`,
+          'This could be due to API limitations or temporary service issues',
+          'Your query has been billed and recorded for usage tracking'
+        ],
+        sources: ['Internal processing system'],
+        citations: [
+          `Query processed on ${new Date().toLocaleDateString()}`,
+          `Processing time: ${processingTime}ms`,
+          `Error: ${error.toString()}`
+        ],
+        summary: `We encountered an issue while processing your query "${query}". This could be due to temporary API limitations, service unavailability, or processing errors. Your query has been billed and recorded. Please try again in a few moments or contact support if the issue persists.`,
+        confidence: 0
+      };
+      
+      const fallbackReport: ProcessedReport = {
+        id: reportId,
+        query,
+        result: fallbackResult,
+        sourcesUsed: searchResults?.sources || [],
+        processingTime,
+        timestamp: new Date(),
+        billingEvents: [queryBilling.id],
+        refreshCount: 0
+      };
+      
+      // Store the fallback report
+      this.reports.set(reportId, fallbackReport);
+      
+      console.log(`⚠️ Returning fallback report due to processing error`);
+      return fallbackReport;
     }
   }
 
