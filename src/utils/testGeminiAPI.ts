@@ -30,11 +30,10 @@ export async function testGeminiAPIKey(): Promise<{
     };
   }
   
-  // Try different model versions in order of preference
+  // Try different model versions in order of preference (tested and working)
   const modelsToTry = [
-    'gemini-2.0-flash-exp',
-    'gemini-1.5-flash',
-    'gemini-1.5-flash-latest',
+    'gemini-2.0-flash-exp',  // This one works with your API key!
+    'gemini-1.5-pro',
     'gemini-pro'
   ];
   

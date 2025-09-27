@@ -27,8 +27,8 @@ export class GeminiService {
         console.log('🚀 Creating GoogleGenerativeAI instance...');
         const genAI = new GoogleGenerativeAI(API_KEY);
         
-        // Try the most likely models first
-        const modelsToTry = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro'];
+        // Use the working model that we tested
+        const modelsToTry = ['gemini-2.0-flash-exp', 'gemini-1.5-pro', 'gemini-pro'];
         
         for (const modelName of modelsToTry) {
           try {
