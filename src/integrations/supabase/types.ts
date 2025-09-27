@@ -14,7 +14,195 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics_summary: {
+        Row: {
+          avg_processing_time_ms: number | null
+          date: string | null
+          id: string
+          total_credits_used: number | null
+          total_questions: number | null
+          total_reports: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avg_processing_time_ms?: number | null
+          date?: string | null
+          id?: string
+          total_credits_used?: number | null
+          total_questions?: number | null
+          total_reports?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avg_processing_time_ms?: number | null
+          date?: string | null
+          id?: string
+          total_credits_used?: number | null
+          total_questions?: number | null
+          total_reports?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      data_sources: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          last_updated: string | null
+          source_type: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          source_type?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          source_type?: string | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          content_text: string | null
+          created_at: string | null
+          file_path: string
+          file_size: number | null
+          filename: string
+          id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          content_text?: string | null
+          created_at?: string | null
+          file_path: string
+          file_size?: number | null
+          filename: string
+          id?: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          content_text?: string | null
+          created_at?: string | null
+          file_path?: string
+          file_size?: number | null
+          filename?: string
+          id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      research_reports: {
+        Row: {
+          citations: Json | null
+          created_at: string | null
+          id: string
+          key_takeaways: Json | null
+          processing_time_ms: number | null
+          question: string
+          sources: Json | null
+          status: string | null
+          summary: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          citations?: Json | null
+          created_at?: string | null
+          id?: string
+          key_takeaways?: Json | null
+          processing_time_ms?: number | null
+          question: string
+          sources?: Json | null
+          status?: string | null
+          summary?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          citations?: Json | null
+          created_at?: string | null
+          id?: string
+          key_takeaways?: Json | null
+          processing_time_ms?: number | null
+          question?: string
+          sources?: Json | null
+          status?: string | null
+          summary?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      usage_tracking: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          credits_used: number | null
+          id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          credits_used?: number | null
+          id?: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          credits_used?: number | null
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

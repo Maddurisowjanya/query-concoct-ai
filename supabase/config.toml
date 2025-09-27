@@ -1,1 +1,10 @@
 project_id = "zayfxclzkdgxnyowzjbl"
+
+[functions.process-pdf]
+verify_jwt = false
+
+[functions.research-query]
+verify_jwt = false
+
+[functions.ingest-data]
+verify_jwt = false
