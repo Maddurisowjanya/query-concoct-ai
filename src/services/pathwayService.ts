@@ -117,15 +117,22 @@ export class PathwayService {
   }
 
   private startMockUpdates() {
-    // Simulate real-time updates every 30 seconds
+    console.log('📡 Starting mock real-time updates...');
+    
+    // Simulate real-time updates every 15 seconds for demo
     setInterval(() => {
       this.simulateDataUpdate();
-    }, 30000);
+    }, 15000);
 
-    // Simulate new data source every 2 minutes
+    // Simulate new data source every 45 seconds for demo
     setInterval(() => {
       this.simulateNewDataSource();
-    }, 120000);
+    }, 45000);
+    
+    // Immediate demo update after 5 seconds
+    setTimeout(() => {
+      this.simulateNewDataSource();
+    }, 5000);
   }
 
   private simulateDataUpdate() {

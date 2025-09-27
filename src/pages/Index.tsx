@@ -92,12 +92,12 @@ const Index = () => {
                 Start Querying
               </Button>
             </Link>
-            <Link to="/analytics">
-              <Button size="lg" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
-                <BarChart3 className="mr-2 h-5 w-5" />
-                View Analytics
-              </Button>
-            </Link>
+              <Link to="/analytics">
+                <Button size="lg" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
+                  <BarChart3 className="mr-2 h-5 w-5" />
+                  View Analytics
+                </Button>
+              </Link>
           </div>
         </div>
 

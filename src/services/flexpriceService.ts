@@ -23,6 +23,10 @@ export class FlexpriceService {
   private totalCredits = 0;
   private balance = 100; // Starting balance
 
+  constructor() {
+    this.loadFromStorage();
+  }
+
   // Pricing configuration
   private pricing = {
     query: 0.1,    // $0.10 per query
@@ -41,9 +45,18 @@ export class FlexpriceService {
     this.events.push(event);
     this.totalCredits += event.cost;
     this.balance -= event.cost;
+    
+    // Save to localStorage
+    this.saveToStorage();
 
     // In production, this would make an actual API call to Flexprice
     await this.sendToFlexprice(event);
+    
+    console.log('💰 Query billed:', {
+      cost: event.cost,
+      totalCredits: this.totalCredits,
+      balance: this.balance
+    });
     
     return event;
   }
@@ -62,8 +75,18 @@ export class FlexpriceService {
     this.events.push(event);
     this.totalCredits += event.cost;
     this.balance -= event.cost;
+    
+    // Save to localStorage
+    this.saveToStorage();
 
     await this.sendToFlexprice(event);
+    
+    console.log('📄 Report billed:', {
+      cost: event.cost,
+      complexity,
+      totalCredits: this.totalCredits,
+      balance: this.balance
+    });
     
     return event;
   }
@@ -161,6 +184,45 @@ export class FlexpriceService {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
+  private saveToStorage(): void {
+    try {
+      const data = {
+        events: this.events,
+        totalCredits: this.totalCredits,
+        balance: this.balance
+      };
+      localStorage.setItem('flexprice-data', JSON.stringify(data));
+    } catch (error) {
+      console.error('Failed to save billing data to storage:', error);
+    }
+  }
+
+  private loadFromStorage(): void {
+    try {
+      const stored = localStorage.getItem('flexprice-data');
+      if (stored) {
+        const data = JSON.parse(stored);
+        this.events = data.events || [];
+        this.totalCredits = data.totalCredits || 0;
+        this.balance = data.balance || 100;
+        
+        // Convert timestamp strings back to Date objects
+        this.events = this.events.map(event => ({
+          ...event,
+          timestamp: new Date(event.timestamp)
+        }));
+        
+        console.log('📊 Loaded billing data from storage:', {
+          events: this.events.length,
+          totalCredits: this.totalCredits,
+          balance: this.balance
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load billing data from storage:', error);
+    }
+  }
+
   // Real-time subscription for billing events
   onBillingUpdate(callback: (stats: UsageStats) => void): () => void {
     const interval = setInterval(() => {
@@ -173,6 +235,20 @@ export class FlexpriceService {
   // Add credits (for demo purposes)
   addCredits(amount: number): void {
     this.balance += amount;
+    this.saveToStorage();
+    console.log('💰 Credits added:', {
+      amount,
+      newBalance: this.balance
+    });
+  }
+  
+  // Clear all billing data (for demo/testing purposes)
+  clearAllData(): void {
+    this.events = [];
+    this.totalCredits = 0;
+    this.balance = 100;
+    this.saveToStorage();
+    console.log('🗋 Billing data cleared');
   }
 }
 

@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import GeminiDebug from "./components/GeminiDebug";
 import WorkflowDemo from "./components/WorkflowDemo";
+import BillingDemo from "./pages/BillingDemo";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/debug" element={<GeminiDebug />} />
               <Route path="/workflow" element={<WorkflowDemo />} />
+              <Route path="/billing" element={<BillingDemo />} />
               <Route path="/auth" element={<Auth />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
