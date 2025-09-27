@@ -523,7 +523,7 @@ export class BackendAgent {
   // Demo methods
   async generateSampleReports(): Promise<void> {
     const sampleQueries = [
-      'What are the latest developments in artificial intelligence?',
+      'What are the latest developments in neural networks?',
       'How is machine learning being applied in healthcare?',
       'What are the current trends in blockchain technology?'
     ];
